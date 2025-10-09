@@ -48,7 +48,7 @@ train_model() {
 
 inference() {
     echo ""
-    read -p "请输入模型路径（例如：checkpoints/角色名_Qwen-1.8B-Chat/final_model）: " model_path
+    read -p "请输入模型路径（例如：checkpoints/角色名_Qwen1.5-1.8B-Chat/final_model）: " model_path
     echo ""
     echo "启动交互式对话..."
     python scripts/inference.py --model_path "$model_path" --load_in_4bit

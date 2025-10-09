@@ -56,7 +56,7 @@ goto menu
 
 :inference
 echo.
-echo 请输入模型路径（例如：checkpoints/角色名_Qwen-1.8B-Chat/final_model）
+echo 请输入模型路径（例如：checkpoints/角色名_Qwen1.5-1.8B-Chat/final_model）
 set /p model_path=模型路径: 
 echo.
 echo 启动交互式对话...

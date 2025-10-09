@@ -8,7 +8,7 @@
 - ✅ **参数高效**：使用LoRA/QLoRA，4060笔记本即可训练
 - ✅ **多格式支持**：支持标准对话、ShareGPT、Alpaca等数据格式
 - ✅ **开箱即用**：完整的数据处理、训练、推理流程
-- ✅ **基于Qwen-1.8B-Chat**：阿里巴巴开源中文对话模型
+- ✅ **基于Qwen1.5-1.8B-Chat**：阿里巴巴开源中文对话模型
 
 ## 🚀 快速开始
 
@@ -16,8 +16,8 @@
 
 ```bash
 # 创建虚拟环境（推荐）
-python -m venv venv
-venv\Scripts\activate  # Windows
+python -m venv .venv
+.venv\Scripts\activate  # Windows
 # source venv/bin/activate  # Linux/Mac
 
 # 安装依赖
@@ -116,7 +116,7 @@ python scripts/train.py
 ```
 
 训练过程中会：
-- 自动下载Qwen-1.8B-Chat基础模型（首次运行）
+- 自动下载Qwen1.5-1.8B-Chat基础模型（首次运行）
 - 使用QLoRA进行参数高效微调
 - 定期保存checkpoint
 - 生成TensorBoard日志
@@ -133,10 +133,10 @@ tensorboard --logdir logs
 
 ```bash
 # 交互式对话
-python scripts/inference.py --model_path checkpoints/你的角色名_Qwen-1.8B-Chat/final_model --load_in_4bit
+python scripts/inference.py --model_path checkpoints/你的角色名_Qwen1.5-1.8B-Chat/final_model --load_in_4bit
 
 # 单轮对话
-python scripts/inference.py --model_path checkpoints/你的角色名_Qwen-1.8B-Chat/final_model --load_in_4bit --single_turn --query "你好"
+python scripts/inference.py --model_path checkpoints/你的角色名_Qwen1.5-1.8B-Chat/final_model --load_in_4bit --single_turn --query "你好"
 ```
 
 ### 7. 合并模型（可选）
@@ -146,7 +146,7 @@ python scripts/inference.py --model_path checkpoints/你的角色名_Qwen-1.8B-C
 ```bash
 python scripts/merge_lora.py \
   --base_model Qwen/Qwen-1.8B-Chat \
-  --lora_path checkpoints/你的角色名_Qwen-1.8B-Chat/final_model \
+  --lora_path checkpoints/你的角色名_Qwen1.5-1.8B-Chat/final_model \
   --output_path output/merged_model
 ```
 
@@ -305,7 +305,7 @@ set HF_ENDPOINT=https://hf-mirror.com     # Windows
 - 配置：batch_size=4, gradient_accumulation=4, r=64
 - 显存占用：约7GB
 - 训练速度：约2-3分钟/100步
-- 可训练模型：Qwen-1.8B-Chat
+- 可训练模型：Qwen1.5-1.8B-Chat
 
 **A100 40GB**：
 - 可以使用更大的batch size和LoRA秩
@@ -313,7 +313,7 @@ set HF_ENDPOINT=https://hf-mirror.com     # Windows
 
 ## 📝 更新日志
 
-- 2024-10 初始版本，支持Qwen-1.8B-Chat微调
+- 2025-10 初始版本，支持Qwen1.5-1.8B-Chat微调
 
 ## 🤝 贡献
 
@@ -325,6 +325,6 @@ set HF_ENDPOINT=https://hf-mirror.com     # Windows
 
 ---
 
-**Powered by Qwen-1.8B-Chat & LoRA**
+**Powered by Qwen1.5-1.8B-Chat & LoRA**
 
 如有问题，请查看文档或提Issue。
