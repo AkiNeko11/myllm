@@ -1,0 +1,69 @@
+# 角色语言风格微调配置文件
+# 只需修改此文件即可切换不同角色训练
+
+# ========== 角色信息 ==========
+character:
+  name: "示例角色"  # 角色名称，用于保存模型时命名
+  description: "这是一个示例角色配置"  # 角色描述
+  system_prompt: "你是一个AI助手。"  # 系统提示词，定义角色设定
+
+# ========== 数据配置 ==========
+data:
+  raw_data_path: "data/raw/conversations.json"  # 原始数据路径
+  processed_data_path: "data/processed"  # 处理后数据保存路径
+  data_format: "standard"  # 数据格式: standard/sharegpt/alpaca/custom
+  max_length: 2048  # 最大序列长度
+  validation_split: 0.05  # 验证集比例
+
+# ========== 模型配置 ==========
+model:
+  base_model: "Qwen/Qwen1.5-1.8B-Chat"  # 基础模型（使用Qwen1.5版本）
+  model_revision: "main"  # 模型版本
+  trust_remote_code: true  # 是否信任远程代码
+  load_in_4bit: true  # 是否使用4bit量化（QLoRA）
+  load_in_8bit: false  # 是否使用8bit量化
+
+# ========== LoRA配置 ==========
+lora:
+  r: 64  # LoRA秩，越大模型容量越大，显存占用越多（推荐：32-64）
+  lora_alpha: 16  # LoRA alpha参数，通常设为r的1/2到1/4
+  target_modules:  # 目标模块
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  lora_dropout: 0.05  # Dropout比例
+  bias: "none"  # 偏置训练方式
+  task_type: "CAUSAL_LM"  # 任务类型
+
+# ========== 训练配置 ==========
+training:
+  output_dir: "checkpoints"  # 模型保存路径
+  num_train_epochs: 3  # 训练轮数
+  per_device_train_batch_size: 4  # 每个设备的训练batch size
+  per_device_eval_batch_size: 4  # 每个设备的评估batch size
+  gradient_accumulation_steps: 4  # 梯度累积步数（实际batch_size = batch_size * gradient_accumulation_steps）
+  learning_rate: 2.0e-4  # 学习率
+  weight_decay: 0.01  # 权重衰减
+  warmup_ratio: 0.03  # 预热比例
+  lr_scheduler_type: "cosine"  # 学习率调度器类型
+  logging_steps: 10  # 日志记录步数
+  save_steps: 100  # 模型保存步数
+  eval_steps: 100  # 评估步数
+  save_total_limit: 3  # 最多保存的checkpoint数量
+  fp16: false  # 是否使用FP16混合精度（RTX 4060建议false）
+  bf16: false  # 是否使用BF16混合精度（RTX 4060不支持）
+  gradient_checkpointing: true  # 梯度检查点，节省显存
+  optim: "paged_adamw_32bit"  # 优化器（QLoRA推荐）
+  max_grad_norm: 0.3  # 梯度裁剪
+
+# ========== 其他配置 ==========
+other:
+  seed: 42  # 随机种子
+  report_to: "tensorboard"  # 日志报告方式
+  logging_dir: "logs"  # 日志保存路径
+  resume_from_checkpoint: null  # 从checkpoint恢复训练（路径或null）
+
