@@ -24,7 +24,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-> **注意**：如果使用4060笔记本，确保已安装CUDA和对应版本的PyTorch
+> **注意**：确保已安装CUDA和对应版本的PyTorch
 
 ### 2. 准备数据
 
@@ -219,7 +219,7 @@ training:
 
 ### 租卡训练
 
-如果使用AutoDL、恒源云等云GPU平台：
+如果使用AutoDL等云GPU平台：
 
 ```bash
 # 上传代码和数据
@@ -228,19 +228,6 @@ git clone <你的仓库>
 cd myllm
 pip install -r requirements.txt
 python scripts/train.py
-```
-
-## 🔧 高级功能
-
-### 自定义数据格式
-
-如果您的数据格式特殊，可以修改 `scripts/prepare_data.py` 中的 `DataProcessor` 类：
-
-```python
-def format_custom(self, item: Dict[str, str]) -> str:
-    """自定义格式转换"""
-    # 实现您的转换逻辑
-    pass
 ```
 
 ### 使用wandb跟踪实验
@@ -299,21 +286,10 @@ set HF_ENDPOINT=https://hf-mirror.com     # Windows
 - 尝试不同的推理参数（temperature、top_p）
 - 增加训练轮数
 
-## 📊 性能参考
-
-**4060 笔记本 (8GB显存)**：
-- 配置：batch_size=4, gradient_accumulation=4, r=64
-- 显存占用：约7GB
-- 训练速度：约2-3分钟/100步
-- 可训练模型：Qwen1.5-1.8B-Chat
-
-**A100 40GB**：
-- 可以使用更大的batch size和LoRA秩
-- 或训练更大的模型（Qwen-7B/14B）
-
 ## 📝 更新日志
 
-- 2025-10 初始版本，支持Qwen1.5-1.8B-Chat微调
+- 2025-10-09 初始版本，支持Qwen1.5-1.8B-Chat微调
+- 2025-10-15 润色修订readme
 
 ## 🤝 贡献
 
