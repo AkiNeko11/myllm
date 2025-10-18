@@ -145,9 +145,11 @@ python scripts/inference.py --model_path checkpoints/你的角色名_Qwen1.5-1.8
 
 ```bash
 python scripts/merge_lora.py \
-  --base_model Qwen/Qwen-1.8B-Chat \
+  --base_model Qwen/Qwen1.5-1.8B-Chat \
   --lora_path checkpoints/你的角色名_Qwen1.5-1.8B-Chat/final_model \
   --output_path output/merged_model
+
+# 方便复制python scripts/merge_lora.py --base_model Qwen/Qwen1.5-1.8B-Chat --lora_path checkpoints/示例角色_Qwen1.5-1.8B-Chat/final_model --output_path output/merged_model
 ```
 
 ## 📁 项目结构

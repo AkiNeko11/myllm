@@ -13,12 +13,38 @@ from pathlib import Path
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
+from typing import Optional
+
+
+def _find_local_snapshot(cache_root: Path, repo_id: str) -> Optional[Path]:
+    """在本地缓存目录下查找给定 repo_id 的最新 snapshot 目录。
+
+    期望的目录结构：
+      <cache_root>/models--<org>--<name>/snapshots/<hash>/
+    """
+    parts = repo_id.split("/")
+    if len(parts) != 2:
+        return None
+
+    org, name = parts
+    snapshots_dir = cache_root / f"models--{org}--{name}" / "snapshots"
+    if not snapshots_dir.exists() or not snapshots_dir.is_dir():
+        return None
+
+    candidates = [p for p in snapshots_dir.iterdir() if p.is_dir()]
+    if not candidates:
+        return None
+
+    latest = max(candidates, key=lambda p: p.stat().st_mtime)
+    return latest
 
 def merge_lora_weights(
     base_model_path: str,
     lora_path: str,
     output_path: str,
-    device: str = "cpu"
+    device: str = "cpu",
+    base_cache_dir: Optional[str] = None,
+    offline: bool = False,
 ):
     """合并LoRA权重到基础模型
     
@@ -44,13 +70,39 @@ def merge_lora_weights(
     )
     print("✓ 分词器加载完成")
     
+    # 解析基础模型本地路径（若提供的是 repo id，则尝试在本地缓存中解析 snapshot）
+    resolved_base = base_model_path
+    cache_root_guess = None
+    if base_cache_dir:
+        cache_root_guess = Path(base_cache_dir)
+    else:
+        # 默认尝试在脚本同级的上一级目录下寻找 base_models 作为缓存根
+        # e.g. llm/myllm/base_models
+        cache_root_guess = Path(__file__).resolve().parent.parent / "base_models"
+
+    if not Path(resolved_base).is_dir():
+        if cache_root_guess.exists():
+            local_snapshot = _find_local_snapshot(cache_root_guess, base_model_path)
+            if local_snapshot is not None:
+                print(f"检测到本地基础模型快照: {local_snapshot}")
+                resolved_base = str(local_snapshot)
+        else:
+            print(f"未发现本地缓存根目录: {cache_root_guess}")
+
+    if offline and not Path(resolved_base).is_dir():
+        raise RuntimeError(
+            "离线模式已启用，但未能解析到本地基础模型快照。"
+            " 请提供本地目录作为 --base_model，或指定 --base_cache_dir 并确保缓存完整。"
+        )
+
     # 加载基础模型
     print("\n加载基础模型...")
     base_model = AutoModelForCausalLM.from_pretrained(
-        base_model_path,
+        resolved_base,
         trust_remote_code=True,
         device_map=device,
         torch_dtype=torch.float16,
+        local_files_only=offline,
     )
     print("✓ 基础模型加载完成")
     
@@ -116,6 +168,17 @@ def main():
         default="cpu",
         help="设备 (cpu/cuda/auto)"
     )
+    parser.add_argument(
+        "--base_cache_dir",
+        type=str,
+        default=None,
+        help="本地基础模型缓存根目录（包含 models--<org>--<name> 的目录）"
+    )
+    parser.add_argument(
+        "--offline",
+        action="store_true",
+        help="仅使用本地文件，不访问网络"
+    )
     
     args = parser.parse_args()
     
@@ -124,6 +187,8 @@ def main():
         lora_path=args.lora_path,
         output_path=args.output_path,
         device=args.device,
+        base_cache_dir=args.base_cache_dir,
+        offline=args.offline,
     )
 
 
