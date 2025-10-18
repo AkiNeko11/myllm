@@ -97,6 +97,7 @@ class ModelTrainer:
         # 加载模型
         self.model = AutoModelForCausalLM.from_pretrained(
             base_model,
+            cache_dir="./base_models",  # 自定义目录
             quantization_config=quantization_config,
             trust_remote_code=self.model_config['trust_remote_code'],
             device_map="auto",
